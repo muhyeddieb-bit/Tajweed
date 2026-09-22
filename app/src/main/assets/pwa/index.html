@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>متون التجويد - تحفة الأطفال والجزرية (PWA)</title>
+  <meta name="theme-color" content="#064E3B">
+  <meta name="description" content="تطبيق ويب تقدمي (PWA) تفاعلي لحفظ وشرح منظومتي تحفة الأطفال والمقدمة الجزرية مع الرسوم التشريحية لمخارج الحروف">
+  
+  <!-- PWA Manifest & Apple Touch -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="متون التجويد">
+
+  <style>
+    :root {
+      --emerald-900: #064E3B;
+      --emerald-800: #065F46;
+      --emerald-700: #047857;
+      --emerald-100: #D1FAE5;
+      --emerald-50: #ECFDF5;
+      --gold-700: #B45309;
+      --gold-600: #D97706;
+      --gold-500: #F59E0B;
+      --gold-100: #FEF3C7;
+      --natural-bg: #F5F7F4;
+      --natural-card: #FFFFFF;
+      --natural-border: #E2E8F0;
+      --text-dark: #1E293B;
+      --text-muted: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--natural-bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--emerald-900) 0%, var(--emerald-800) 100%);
+      color: white;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-title p {
+      font-size: 0.8rem;
+      color: var(--gold-100);
+      margin-top: 2px;
+    }
+
+    .nav-tabs {
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid var(--natural-border);
+      position: sticky;
+      top: 65px;
+      z-index: 90;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .nav-tab-btn.active {
+      color: var(--emerald-900);
+      border-bottom-color: var(--emerald-800);
+      background-color: var(--emerald-50);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--natural-card);
+      border-radius: 16px;
+      border: 1px solid var(--natural-border);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--natural-border);
+      background: white;
+      color: var(--emerald-900);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pill-btn.active {
+      background: var(--emerald-800);
+      color: white;
+      border-color: var(--emerald-900);
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #F8FAFC;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--natural-border);
+    }
+
+    .zoom-btn {
+      background: white;
+      border: 1px solid var(--natural-border);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--emerald-900);
+      cursor: pointer;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--natural-border);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--emerald-700);
+    }
+
+    .bayt-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--natural-border);
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .bayt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .bayt-badge {
+      background: var(--emerald-800);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .bayt-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-action-btn {
+      background: var(--emerald-50);
+      border: 1px solid var(--emerald-100);
+      color: var(--emerald-800);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bayt-text {
+      text-align: center;
+      font-weight: 700;
+      color: var(--emerald-900);
+      line-height: 2.1;
+      padding: 8px 0;
+      transition: font-size 0.15s ease;
+    }
+
+    .bayt-separator {
+      color: var(--gold-600);
+      margin: 0 8px;
+    }
+
+    .bayt-explanation {
+      margin-top: 10px;
+      background: #FDFBF7;
+      border: 1px solid #F6EBD9;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: #574A3D;
+    }
+
+    /* Anatomical Diagram SVG Styles */
+    .anatomy-container {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--natural-border);
+      text-align: center;
+    }
+
+    .anatomy-svg {
+      width: 100%;
+      max-height: 290px;
+      border-radius: 12px;
+      background: #FAFCF9;
+      border: 1px solid #E2EBE0;
+    }
+
+    .organ-chip-row {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 10px 0;
+      scrollbar-width: none;
+    }
+
+    .organ-chip {
+      white-space: nowrap;
+      padding: 6px 14px;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid var(--natural-border);
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--emerald-900);
+      cursor: pointer;
+    }
+
+    .organ-chip.selected {
+      background: var(--emerald-800);
+      color: white;
+      border-color: var(--emerald-900);
+    }
+
+    .letter-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .letter-badge {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid var(--natural-border);
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: var(--emerald-900);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .letter-badge.active {
+      background: var(--emerald-800);
+      color: white;
+      border-color: var(--emerald-900);
+      transform: scale(1.08);
+    }
+
+    .detail-card {
+      background: #FDFBF7;
+      border: 1px solid #EEDBBE;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 14px;
+      text-align: right;
+    }
+
+    .pwa-banner {
+      background: linear-gradient(135deg, var(--gold-100) 0%, #FEF9C3 100%);
+      border: 1px solid var(--gold-500);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .install-pwa-btn {
+      background: var(--emerald-800);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tab-section {
+      display: none;
+    }
+
+    .tab-section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="header-title">
+        <h1>📖 متون التجويد (PWA)</h1>
+        <p>تطبيق الويب التقدمي لحفظ وشرح تحفة الأطفال والمقدمة الجزرية</p>
+      </div>
+      <button id="headerInstallBtn" class="install-pwa-btn" style="display:none;" onclick="triggerInstallPrompt()">
+        📲 تثبيت التطبيق
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab-btn active" onclick="switchTab('readerTab', this)">📜 قارئ الأبيات</button>
+    <button class="nav-tab-btn" onclick="switchTab('anatomyTab', this)">🗣️ المخارج المصورة</button>
+    <button class="nav-tab-btn" onclick="switchTab('infoTab', this)">ℹ️ دليل التثبيت والتصدير</button>
+  </nav>
+
+  <main class="container">
+    <!-- PWA Install Prompt Banner -->
+    <div id="pwaBanner" class="pwa-banner" style="display:none;">
+      <div>
+        <strong style="color: var(--gold-700);">تثبيت التطبيق على جهازك:</strong>
+        <p style="font-size: 0.85rem; color: #78350F;">يمكنك تثبيت متون التجويد للوصول السريع بدون إنترنت بنقرة واحدة.</p>
+      </div>
+      <button class="install-pwa-btn" onclick="triggerInstallPrompt()">تثبيت الآن</button>
+    </div>
+
+    <!-- 1. Reader Tab -->
+    <section id="readerTab" class="tab-section active">
+      <div class="card">
+        <div class="toolbar">
+          <div class="pill-group">
+            <button id="matnJazBtn" class="pill-btn active" onclick="selectMatn('jazariyyah')">المقدمة الجزرية (107)</button>
+            <button id="matnTuhBtn" class="pill-btn" onclick="selectMatn('tuhfat')">تحفة الأطفال (61)</button>
+          </div>
+
+          <div class="zoom-controls">
+            <button class="zoom-btn" onclick="adjustFontSize(-2)">A-</button>
+            <span id="fontLabel" style="font-size: 0.85rem; font-weight: bold; color: var(--emerald-900);">21px</span>
+            <button class="zoom-btn" onclick="adjustFontSize(2)">A+</button>
+          </div>
+        </div>
+
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث في نص الأبيات أو الشرح أو رقم البيت..." oninput="filterVerses()">
+      </div>
+
+      <!-- Verses Container -->
+      <div id="versesList"></div>
+    </section>
+
+    <!-- 2. Anatomical Makharij Tab -->
+    <section id="anatomyTab" class="tab-section">
+      <div class="anatomy-container">
+        <h2 style="font-size: 1.15rem; color: var(--emerald-900); margin-bottom: 4px;">الرسم التشريحي السهمي لجهاز النطق</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">انقر على أي مخرج عام أو حرف هجائي لإضاءة موضعه الدقيق ومعرفة كيفية توليده</p>
+
+        <!-- SVG Vocal Tract Canvas -->
+        <svg id="vocalTractSvg" class="anatomy-svg" viewBox="0 0 360 270">
+          <defs>
+            <linearGradient id="airFlowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#064E3B" stop-opacity="0.1"/>
+              <stop offset="60%" stop-color="#10B981" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.8"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Head & Neck Contour -->
+          <path d="M 60 250 L 60 160 Q 60 50 160 30 Q 250 30 270 90 Q 280 130 250 145 Q 260 165 240 185 Q 230 200 240 250" 
+                fill="none" stroke="#CBD5E1" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Nasal Cavity (الخيشوم) -->
+          <path id="svgKhayshoom" d="M 170 85 Q 230 75 250 110 L 230 115 Q 180 100 160 105 Z" 
+                fill="#F8FAFC" stroke="#94A3B8" stroke-width="2.5" class="organ-shape" onclick="selectOrgan('KHAYSHOOM')"/>
+          <text x="210" y="98" font-size="10" font-weight="bold" fill="#064E3B" text-anchor="middle">الخيشوم (الغنة)</text>
+
+          <!-- Hard & Soft Palate (الحنك الأعلى) -->
+          <path d="M 160 115 Q 190 120 220 135 L 240 142" 
+                fill="none" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Lips (الشفتان) -->
+          <path id="svgShafatan" d="M 245 155 Q 265 158 260 170 Q 250 178 240 178" 
+                fill="none" stroke="#94A3B8" stroke-width="6" stroke-linecap="round" class="organ-shape" onclick="selectOrgan('SHAFATAN')"/>
+          <text x="280" y="170" font-size="10" font-weight="bold" fill="#064E3B" text-anchor="middle">الشفتان</text>
+
+          <!-- Teeth (الأسنان العليا والسفلى) -->
+          <rect x="238" y="142" width="6" height="10" rx="2" fill="#E2E8F0" stroke="#94A3B8"/>
+          <rect x="235" y="172" width="6" height="10" rx="2" fill="#E2E8F0" stroke="#94A3B8"/>
+
+          <!-- Tongue (اللسان) -->
+          <path id="svgLisan" d="M 140 195 Q 160 160 190 155 Q 215 152 230 156 Q 215 180 175 190 Z" 
+                fill="#FEF3C7" stroke="#D97706" stroke-width="3" class="organ-shape" onclick="selectOrgan('LISAN')"/>
+          <text x="185" y="175" font-size="11" font-weight="bold" fill="#92400E" text-anchor="middle">اللسان (10 مخارج)</text>
+
+          <!-- Throat / Pharynx (الحلق) -->
+          <path id="svgHalq" d="M 125 180 Q 120 215 130 250" 
+                fill="none" stroke="#94A3B8" stroke-width="5" stroke-linecap="round" class="organ-shape" onclick="selectOrgan('HALQ')"/>
+          <text x="95" y="215" font-size="10" font-weight="bold" fill="#064E3B" text-anchor="middle">الحلق (6 حروف)</text>
+
+          <!-- Vocal Cords / Larynx (الحنجرة والأوتار) -->
+          <ellipse cx="130" cy="240" rx="8" ry="4" fill="#D97706"/>
+          <text x="90" y="244" font-size="9" fill="#B45309" text-anchor="middle">أقصى الحلق</text>
+
+          <!-- Oral & Throat Cavity (الجوف) -->
+          <path id="svgJawf" d="M 135 240 Q 145 180 185 145 Q 220 145 250 165" 
+                fill="none" stroke="url(#airFlowGrad)" stroke-width="12" stroke-linecap="round" opacity="0.6" class="organ-shape" onclick="selectOrgan('JAWF')"/>
+          <text x="175" y="130" font-size="10" font-weight="bold" fill="#047857" text-anchor="middle">الجوف (حروف المد)</text>
+        </svg>
+
+        <!-- Organ Chips Row -->
+        <div class="organ-chip-row">
+          <button class="organ-chip selected" onclick="selectOrgan('ALL', this)">نظرة شاملة</button>
+          <button class="organ-chip" onclick="selectOrgan('JAWF', this)">1. الجوف (3)</button>
+          <button class="organ-chip" onclick="selectOrgan('HALQ', this)">2. الحلق (6)</button>
+          <button class="organ-chip" onclick="selectOrgan('LISAN', this)">3. اللسان (18)</button>
+          <button class="organ-chip" onclick="selectOrgan('SHAFATAN', this)">4. الشفتان (4)</button>
+          <button class="organ-chip" onclick="selectOrgan('KHAYSHOOM', this)">5. الخيشوم (الغنة)</button>
+        </div>
+
+        <!-- Quick Alphabet Bar -->
+        <div style="text-align: right; margin-top: 10px;">
+          <strong style="font-size: 0.85rem; color: var(--gold-700);">فهرس الحروف الأبجدية:</strong>
+          <div id="alphabetRow" class="letter-grid"></div>
+        </div>
+
+        <!-- Selected Organ Detail Card -->
+        <div id="organDetailBox" class="detail-card">
+          <h3 id="organDetailTitle" style="color: var(--emerald-900); font-size: 1.05rem; margin-bottom: 6px;">مخرج اللسان</h3>
+          <p id="organDetailDesc" style="font-size: 0.9rem; line-height: 1.7; color: #475569;">
+            اللسان هو أعظم المخارج العامة ويحتوي على 10 مخارج خاصة لـ 18 حرفاً، موزعة على أربعة مواضع: أقصى اللسان، وسطه، حافتاه، وطرفه.
+          </p>
+          <div id="organDetailTip" style="margin-top: 10px; font-weight: bold; color: var(--gold-700); font-size: 0.85rem;">
+            💡 قال ابن الجزري: «مَخَارِجُ الحُرُوفِ سَبْعَةَ عَشَرْ * عَلَى الَّذِي يَخْتَارُهُ مَنِ اخْتَبَرْ»
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PWA Info & Export Guide Tab -->
+    <section id="infoTab" class="tab-section">
+      <div class="card">
+        <h2 style="font-size: 1.15rem; color: var(--emerald-900); margin-bottom: 10px;">✨ حزمة تطبيق الويب التقدمي (PWA) الجاهزة للنشر</h2>
+        <p style="font-size: 0.9rem; line-height: 1.8; color: #334155; margin-bottom: 14px;">
+          تم تجهيز هذا التطبيق كـ <strong>Progressive Web App (PWA)</strong> كامل يدمج ملفات:
+        </p>
+        <ul style="font-size: 0.85rem; line-height: 1.9; padding-right: 20px; color: #475569;">
+          <li><strong>index.html:</strong> واجهة الويب الشاملة بمتني التجويد، والنطق الصوتي، والرسوم التشريحية.</li>
+          <li><strong>manifest.json:</strong> لتمكين التثبيت على شاشة الهاتف وسطح المكتب بدون متجر تطبيقات.</li>
+          <li><strong>service-worker.js:</strong> للتخزين المؤقت والتشغيل بدون اتصال بالإنترنت (Offline Mode).</li>
+        </ul>
+
+        <div style="margin-top: 16px; background: var(--emerald-50); border: 1px solid var(--emerald-100); border-radius: 12px; padding: 14px;">
+          <h3 style="color: var(--emerald-900); font-size: 0.95rem; margin-bottom: 6px;">🌐 كيف تنشر هذه النسخة على الويب مجاناً بنقرة واحدة؟</h3>
+          <p style="font-size: 0.85rem; line-height: 1.7; color: #065F46;">
+            1. انسخ ملفات مجلد <code>assets/pwa/</code> في مشروعك.<br>
+            2. ارفعها إلى أي استضافة ويب مجانية مثل: <strong>GitHub Pages</strong> أو <strong>Netlify</strong> أو <strong>Vercel</strong>.<br>
+            3. افتح الرابط في متصفحك (سفاري، كروم، إيدج) واضغط على "إضافة إلى الشاشة الرئيسية" ليصبح تطبيقاً مستقلاً تماماً على هاتفك!
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- Data: Verses Data (Jazariyyah Sample & Tuhfat Al-Atfal Sample) ---
+    const jazariyyahVerses = [
+      { num: 1, first: "يَقُولُ رَاجِي عَفْوِ رَبٍّ سَامِعِ", second: "مُحَمَّدُ بْنُ الْجَزَرِيِّ الشَّافِعِي", exp: "افتتاحية المنظومة بحمد الله ورجاء عَفْوه ومغفرته." },
+      { num: 2, first: "الْحَمْدُ لِلَّهِ وَصَلَّى اللَّهُ", second: "عَلَى نَبِيِّهِ وَمُصْطَفَاهُ", exp: "الثناء على الله تعالى والصلاة والسلام على رسوله المصطفى." },
+      { num: 9, first: "مَخَارِجُ الحُرُوفِ سَبْعَةَ عَشَرْ", second: "عَلَى الَّذِي يَخْتَارُهُ مَنِ اخْتَبَرْ", exp: "بيان أن مخارج الحروف سبعة عشر مخرجاً على مذهب المحققين كالإمام الخليل بن أحمد وابن الجزري." },
+      { num: 10, first: "فَأَلِفُ الْجَوْفِ وَأُخْتَاهَا وَهِي", second: "حُرُوفُ مَدٍّ لِلْهَوَاءِ تَنْتَهِي", exp: "مخرج الجوف: وتخرج منه حروف المد الثلاثة (الألف الساكنة وما قبلها مفتوح، الواو الساكنة المضموم ما قبلها، الياء الساكنة المكسور ما قبلها)." },
+      { num: 11, first: "ثُمَّ لأَقْصَى الحَلْقِ هَمْزٌ هَاءُ", second: "وَمِنْ وَسَطِهِ فَعَيْنٌ حَاءُ", exp: "مخرج الحلق: أقصى الحلق (مما يلي الصدر) يخرج منه الهمزة والهاء، ووسط الحلق يخرج منه العين والحاء." },
+      { num: 12, first: "أَدْنَاهُ غَيْنٌ خَاؤُهَا وَالْقَافُ", second: "أَقْصَى اللِّسَانِ فَوْقُ ثُمَّ الْكَافُ", exp: "أدنى الحلق يخرج منه الغين والخاء، ثم أقصى اللسان مع الحنك الأعلى يخرج منه القاف، وأسفل منه مخرج الكاف." },
+      { num: 13, first: "أَسْفَلُ وَالْوَسْطُ فَجِيمُ الشِّينُ يَا", second: "وَالضَّادُ مِنْ حَافَتِهِ إِذْ وَلِيَا", exp: "وسط اللسان يخرج منه الجيم والشين والياء غير المدية، والضاد تخرج من إحدى حافتي اللسان أو كلتيهما مع الأضراس العليا." },
+      { num: 14, first: "لاضْرَاسَ مِنْ أَيْسَرَ أَوْ يُمْنَاهَا", second: "وَاللاَّمُ أَدْنَاهَا لِمُنْتَهَاهَا", exp: "تتمة مخرج الضاد المستطيلة، ومخرج اللام من أدنى حافة اللسان إلى منتهى طرفه." },
+      { num: 15, first: "وَالنُّونُ مِنْ طَرْفِهِ تَحْتُ اجْعَلُوا", second: "وَالرَّا يُدَانِيهِ لِظَهْرٍ أَدْخَلُ", exp: "النون من طرف اللسان تحت اللام بقليل، والراء قريبة من مخرج النون لكنها أدخل إلى ظهر اللسان." },
+      { num: 16, first: "وَالطَّاءُ وَالدَّالُ وَتَا مِنْهُ وَمِنْ", second: "عُلْيَا الثَّنَايَا وَالصَّفِيرُ مُسْتَكِنْ", exp: "الطاء والدال والتاء تخرج من طرف اللسان مع أصول الثنايا العليا، وحروف الصفير (ص، س، ز) من طرف اللسان مع فوق الثنايا السفلى." },
+      { num: 17, first: "مِنْهُ وَمِنْ فَوْقِ الثَّنَايَا السُّفْلَى", second: "وَالظَّاءُ وَالذَّالُ وَثَا لِلْعُلْيَا", exp: "حروف الصفير مع أسفل الثنايا، وحروف (الظاء والذال والثاء) من طرف اللسان مع أطراف الثنايا العليا." },
+      { num: 18, first: "مِنْ طَرَفَيْهِمَا وَمِنْ بَطْنِ الشَّفَهْ", second: "فَالْفَا مَعَ اطْرَافِ الثَّنَايَا الْمُشْرِفَهْ", exp: "الفاء تخرج من بطن الشفة السفلى مع أطراف الثنايا العليا المشرفة." },
+      { num: 19, first: "لِلشَّفَتَيْنِ الْوَاوُ بَاءٌ مِيمُ", second: "وَغُنَّةٌ مَخْرَجُهَا الخَيْشُومُ", exp: "للشفتين معاً الواو غير المدية والباء والميم، والغنة مخرجها المستقل هو الخيشوم (تجويف الأنف)." }
+    ];
+
+    const tuhfatVerses = [
+      { num: 1, first: "يَقُولُ رَاجِي رَحْمَةِ الْغَفُورِ", second: "دَوْمًا سُلَيْمَانُ هُوَ الْجَمْزُورِي", exp: "مقدمة الناظم الشيخ سليمان الجمزوري رحمه الله ورجاء رحمة ربه." },
+      { num: 2, first: "الْحَمْدُ لِلَّهِ مُصَلِّيًا عَلَى", second: "مُحَمَّدٍ وَآلِهِ وَمَنْ تَلاَ", exp: "حمد الله والصلاة على النبي وآله ومتبعي هديه وتالين كتابه." },
+      { num: 6, first: "لِلنُّونِ إِنْ تَسْكُنْ وَلِلتَّنْوِينِ", second: "أَرْبَعُ أَحْكَامٍ فَخُذْ تَبْيِينِي", exp: "حكم النون الساكنة والتنوين: أربعة أحكام هي الإظهار والإدغام والإقلاب والإخفاء." },
+      { num: 7, first: "فَالأَوَّلُ الإِظْهَارُ قَبْلَ أَحْرُفِ", second: "لِلْحَلْقِ سِتٍّ رُتِّبَتْ فَلْتَعْرِفِ", exp: "الحكم الأول: الإظهار الحلقي عند ستة أحرف: الهمزة والهاء، والعين والحاء، والغين والخاء." },
+      { num: 8, first: "هَمْزٌ فَهَاءٌ ثُمَّ عَيْنٌ حَاءُ", second: "مُهْمَلَتَانِ ثُمَّ غَيْنٌ خَاءُ", exp: "تعداد حروف الإظهار الحلقي الستة بالترتيب من أقصى الحلق إلى أدناه." }
+    ];
+
+    const alphabetData = [
+      { l: "أ", organ: "HALQ", desc: "همزة: أقصى الحلق" },
+      { l: "ب", organ: "SHAFATAN", desc: "باء: انطباق الشفتين" },
+      { l: "ت", organ: "LISAN", desc: "تاء: طرف اللسان مع أصول الثنايا العليا" },
+      { l: "ث", organ: "LISAN", desc: "ثاء: طرف اللسان مع أطراف الثنايا العليا" },
+      { l: "ج", organ: "LISAN", desc: "جيم: وسط اللسان مع الحنك الأعلى" },
+      { l: "ح", organ: "HALQ", desc: "حاء: وسط الحلق" },
+      { l: "خ", organ: "HALQ", desc: "خاء: أدنى الحلق" },
+      { l: "د", organ: "LISAN", desc: "دال: طرف اللسان مع أصول الثنايا العليا" },
+      { l: "ذ", organ: "LISAN", desc: "ذال: طرف اللسان مع أطراف الثنايا العليا" },
+      { l: "ر", organ: "LISAN", desc: "راء: طرف اللسان أدخل لظهره" },
+      { l: "ز", organ: "LISAN", desc: "زاي: طرف اللسان مع فوق الثنايا السفلى" },
+      { l: "س", organ: "LISAN", desc: "سين: طرف اللسان مع فوق الثنايا السفلى" },
+      { l: "ش", organ: "LISAN", desc: "شين: وسط اللسان مع الحنك الأعلى" },
+      { l: "ص", organ: "LISAN", desc: "صاد: طرف اللسان مع فوق الثنايا السفلى" },
+      { l: "ض", organ: "LISAN", desc: "ضاد: إحدى حافتي اللسان مع الأضراس العليا" },
+      { l: "ط", organ: "LISAN", desc: "طاء: طرف اللسان مع أصول الثنايا العليا" },
+      { l: "ظ", organ: "LISAN", desc: "ظاء: طرف اللسان مع أطراف الثنايا العليا" },
+      { l: "ع", organ: "HALQ", desc: "عين: وسط الحلق" },
+      { l: "غ", organ: "HALQ", desc: "غين: أدنى الحلق" },
+      { l: "ف", organ: "SHAFATAN", desc: "فاء: بطن الشفة السفلى مع الثنايا العليا" },
+      { l: "ق", organ: "LISAN", desc: "قاف: أقصى اللسان مع الحنك الأعلى اللحمي" },
+      { l: "ك", organ: "LISAN", desc: "كاف: أقصى اللسان أسفل القاف مع العظمي واللحمي" },
+      { l: "ل", organ: "LISAN", desc: "لام: أدنى حافة اللسان إلى منتهى طرفه" },
+      { l: "م", organ: "SHAFATAN", desc: "ميم: انطباق الشفتين مصحوبة بغنة" },
+      { l: "ن", organ: "LISAN", desc: "نون: طرف اللسان تحت اللام مصحوبة بغنة" },
+      { l: "هـ", organ: "HALQ", desc: "هاء: أقصى الحلق" },
+      { l: "و", organ: "SHAFATAN", desc: "واو: ضم الشفتين مع فرجة" },
+      { l: "ي", organ: "LISAN", desc: "ياء: وسط اللسان" }
+    ];
+
+    let currentMatn = 'jazariyyah';
+    let currentFontSize = 21;
+    let deferredInstallPrompt = null;
+
+    // --- Tab Switching ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // --- Matn Selection ---
+    function selectMatn(matn) {
+      currentMatn = matn;
+      document.getElementById('matnJazBtn').classList.toggle('active', matn === 'jazariyyah');
+      document.getElementById('matnTuhBtn').classList.toggle('active', matn === 'tuhfat');
+      renderVerses();
+    }
+
+    // --- Font Zoom ---
+    function adjustFontSize(delta) {
+      currentFontSize = Math.max(16, Math.min(34, currentFontSize + delta));
+      document.getElementById('fontLabel').textContent = currentFontSize + 'px';
+      document.querySelectorAll('.bayt-text').forEach(el => {
+        el.style.fontSize = currentFontSize + 'px';
+      });
+    }
+
+    // --- Render Verses ---
+    function renderVerses(filterText = '') {
+      const list = document.getElementById('versesList');
+      const data = currentMatn === 'jazariyyah' ? jazariyyahVerses : tuhfatVerses;
+      const q = filterText.trim().toLowerCase();
+
+      const filtered = data.filter(item => {
+        if (!q) return true;
+        return item.first.includes(q) || item.second.includes(q) || item.exp.includes(q) || item.num.toString() === q;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">لا توجد أبيات مطابقة للبحث</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(v => `
+        <div class="bayt-card">
+          <div class="bayt-header">
+            <span class="bayt-badge">البيت ${v.num}</span>
+            <div class="bayt-actions">
+              <button class="icon-action-btn" onclick="speakVerse('${v.first} * ${v.second}')">🔊 استماع</button>
+            </div>
+          </div>
+          <div class="bayt-text" style="font-size: ${currentFontSize}px;">
+            <span>${v.first}</span>
+            <span class="bayt-separator">۞</span>
+            <span>${v.second}</span>
+          </div>
+          <div class="bayt-explanation">
+            <strong>الشرح الميسر:</strong> ${v.exp}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterVerses() {
+      const q = document.getElementById('searchInput').value;
+      renderVerses(q);
+    }
+
+    // --- Web Speech Synthesis ---
+    function speakVerse(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text.replace('*', ' ... '));
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('محرك النطق الصوتي غير مدعوم في هذا المتصفح');
+      }
+    }
+
+    // --- Organ Selection & SVG Glow ---
+    function selectOrgan(organKey, btn) {
+      if (btn) {
+        document.querySelectorAll('.organ-chip').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      }
+
+      const organShapes = {
+        'JAWF': document.getElementById('svgJawf'),
+        'HALQ': document.getElementById('svgHalq'),
+        'LISAN': document.getElementById('svgLisan'),
+        'SHAFATAN': document.getElementById('svgShafatan'),
+        'KHAYSHOOM': document.getElementById('svgKhayshoom')
+      };
+
+      // Reset styles
+      Object.values(organShapes).forEach(el => {
+        if (el) {
+          el.removeAttribute('filter');
+          el.style.stroke = '';
+        }
+      });
+
+      const titles = {
+        'ALL': 'نظرة شاملة على مخارج الحروف',
+        'JAWF': '1. مخرج الجوف (تجاويف الحلق والفم)',
+        'HALQ': '2. مخرج الحلق (أقصاه، وسطه، أدناه)',
+        'LISAN': '3. مخرج اللسان (10 مخارج لـ 18 حرفاً)',
+        'SHAFATAN': '4. مخرج الشفتين (الفاء، الواو، الباء، الميم)',
+        'KHAYSHOOM': '5. مخرج الخيشوم (موضع خروج الغنة)'
+      };
+
+      const descs = {
+        'ALL': 'المخارج العامة خمسة: الجوف، الحلق، اللسان، الشفتان، والخيشوم. وتتفرع إلى 17 مخرجاً خاصاً تتولد منها جميع أصوات الحروف العربية.',
+        'JAWF': 'الجوف هو الخلاء الممتد داخل الحلق والفم، ويخرج منه حروف المد الثلاثة (الألف والواو والياء السواكن المسبوقة بحركات مجانسة لها).',
+        'HALQ': 'الحلق فيه ثلاثة مخارج لستة حروف: أقصى الحلق (الهمزة والهاء)، وسط الحلق (العين والحاء)، وأدنى الحلق (الغين والخاء).',
+        'LISAN': 'اللسان هو أعظم المخارج وفيه 10 مخارج خاصة لـ 18 حرفاً تشمل: القاف والكاف، الجيم والشين والياء، الضاد، اللام، النون، الراء، الطاء والدال والتاء، وحروف الصفير، والظاء والذال والثاء.',
+        'SHAFATAN': 'للشفتين مخرجان: بطن الشفة السفلى مع الثنايا العليا للفاء، وانطباق الشفتين أو انضمامهما للباء والميم والواو غير المدية.',
+        'KHAYSHOOM': 'الخيشوم هو التجويف الأنفي المتصل بأعلى الحلق، وهو المخرج المخصص للغنة المركبة في جسم النون والميم.'
+      };
+
+      document.getElementById('organDetailTitle').textContent = titles[organKey] || titles['ALL'];
+      document.getElementById('organDetailDesc').textContent = descs[organKey] || descs['ALL'];
+
+      if (organShapes[organKey]) {
+        organShapes[organKey].setAttribute('filter', 'url(#glow)');
+        organShapes[organKey].style.stroke = '#F59E0B';
+      }
+    }
+
+    // --- Alphabet Grid Setup ---
+    function setupAlphabet() {
+      const row = document.getElementById('alphabetRow');
+      row.innerHTML = alphabetData.map(item => `
+        <div class="letter-badge" onclick="highlightLetter('${item.l}', '${item.organ}', '${item.desc}', this)">
+          ${item.l}
+        </div>
+      `).join('');
+    }
+
+    function highlightLetter(letter, organ, desc, element) {
+      document.querySelectorAll('.letter-badge').forEach(b => b.classList.remove('active'));
+      element.classList.add('active');
+      selectOrgan(organ);
+      document.getElementById('organDetailTitle').textContent = `حرف (${letter}) - ${desc}`;
+    }
+
+    // --- PWA Installation Events ---
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById('pwaBanner').style.display = 'flex';
+      document.getElementById('headerInstallBtn').style.display = 'block';
+    });
+
+    function triggerInstallPrompt() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('pwaBanner').style.display = 'none';
+            document.getElementById('headerInstallBtn').style.display = 'none';
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        alert('لتثبيت التطبيق على جهازك:\n- على آيفون (سفاري): اضغط زر المشاركة ثم "إضافة إلى الشاشة الرئيسية (Add to Home Screen)".\n- على أندرويد (كروم): اضغط القائمة (⋮) ثم "تثبيت التطبيق (Install App)".');
+      }
+    }
+
+    // --- Register Service Worker ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(err => {
+          console.log('ServiceWorker registration ignored in preview:', err);
+        });
+      });
+    }
+
+    // Initialization
+    renderVerses();
+    setupAlphabet();
+  </script>
+</body>
+</html>

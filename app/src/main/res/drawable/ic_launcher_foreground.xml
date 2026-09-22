@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Golden Aura Glow behind book -->
+    <path
+        android:pathData="M54,34 A20,20 0 1 0 54,74 A20,20 0 1 0 54,34"
+        android:fillColor="#1AF59E0B" />
+
+    <!-- Open Book Pages (Left & Right) with curved aesthetic -->
+    <!-- Left Page Base -->
+    <path
+        android:pathData="M54,40 C45,37 32,38 27,41 C26.5,41.3 26,41.9 26,42.5 L26,67 C26,67.7 26.6,68.2 27.3,68 C32,66.8 45,66 54,69 Z"
+        android:fillColor="#FEF3C7" />
+
+    <!-- Right Page Base -->
+    <path
+        android:pathData="M54,40 C63,37 76,38 81,41 C81.5,41.3 82,41.9 82,42.5 L82,67 C82,67.7 81.4,68.2 80.7,68 C76,66.8 63,66 54,69 Z"
+        android:fillColor="#FFFBEB" />
+
+    <!-- Book Spine / Center Fold Shadow -->
+    <path
+        android:pathData="M53.2,40 L54.8,40 L54.8,69 L53.2,69 Z"
+        android:fillColor="#D97706" />
+
+    <!-- Page Text Lines Representation (Golden / Amber) -->
+    <!-- Left Page Lines -->
+    <path
+        android:pathData="M32,47 L48,46 M32,53 L48,52 M32,59 L46,58"
+        android:strokeColor="#B45309"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+
+    <!-- Right Page Lines -->
+    <path
+        android:pathData="M60,46 L76,47 M60,52 L76,53 M62,58 L76,59"
+        android:strokeColor="#B45309"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+
+    <!-- Gold Ribbon Bookmark Hanging Down -->
+    <path
+        android:pathData="M54,41 C54,48 52,56 56,66 L57.5,75 L54,73 L50.5,75 L52,66 C53,58 54,50 54,41 Z"
+        android:fillColor="#F59E0B" />
+
+    <!-- Wooden Rihal / Stand crossing underneath -->
+    <path
+        android:pathData="M32,71 L76,79 L74,82 L30,74 Z"
+        android:fillColor="#78350F" />
+    <path
+        android:pathData="M76,71 L32,79 L30,82 L74,74 Z"
+        android:fillColor="#92400E" />
+
+    <!-- Top Radiant Star / Crescent Accent -->
+    <path
+        android:pathData="M54,27 L55.5,31 L60,31.5 L56.7,34 L57.7,38.5 L54,36 L50.3,38.5 L51.3,34 L48,31.5 L52.5,31 Z"
+        android:fillColor="#FBBF24" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "name": "متون التجويد",
+  "description": "تطبيق تعليمي تفاعلي لحفظ وشرح منظومتي تحفة الأطفال والجزرية مع الرسوم التشريحية لمخارج الحروف وخريطة بصرية تفاعلية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
